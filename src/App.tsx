@@ -1,5 +1,6 @@
 import "./App.css";
 import { Game } from "./core";
+import { Switch, Route } from "react-router-dom";
 import TestScene from "./components/TestScene";
 
 function App() {
@@ -15,7 +16,14 @@ function App() {
         },
       }}
     >
-      <TestScene />
+      <Switch>
+        <Route exact path="/">
+          <TestScene />
+        </Route>
+        <Route path="/test">
+          <TestScene />
+        </Route>
+      </Switch>
     </Game>
   );
 }

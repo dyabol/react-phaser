@@ -7,11 +7,9 @@ const Game: React.FC<Phaser.Types.Core.GameConfig> = ({
 }) => {
   const [booting, setBooting] = useState(true);
   const game = useRef<Phaser.Game>();
-  const parent = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const gameInstance = new Phaser.Game({
-      parent: parent.current ?? undefined,
       ...config,
     });
     gameInstance.events.on("ready", () => {
@@ -26,9 +24,7 @@ const Game: React.FC<Phaser.Types.Core.GameConfig> = ({
 
   return (
     <GameContext.Provider value={game.current}>
-      <div id="game" ref={parent}>
-        {booting ? null : children}
-      </div>
+      {booting ? null : children}
     </GameContext.Provider>
   );
 };
