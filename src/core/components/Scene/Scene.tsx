@@ -9,7 +9,7 @@ import Phaser from "phaser";
 import SceneContext from "./SceneContext";
 import useGame from "../../hooks/useGame";
 
-type SceneType = {
+export type SceneType = {
   create?: (() => void) | null;
   preload?: (() => void) | null;
   init?: (() => void) | null;

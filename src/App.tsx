@@ -2,6 +2,7 @@ import "./App.css";
 import { Game } from "./core";
 import { Switch, Route } from "react-router-dom";
 import TestScene from "./components/TestScene";
+import MyGame from "./components/MyGame";
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
     >
       <Switch>
         <Route exact path="/">
-          <TestScene />
+          <MyGame />
         </Route>
         <Route path="/test">
           <TestScene />
