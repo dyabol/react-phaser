@@ -2,7 +2,6 @@ import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
-  useLayoutEffect,
   useMemo,
   useState,
 } from "react";
@@ -21,14 +20,19 @@ type Props = {
   create?: (scene: Phaser.Scene) => void;
   preload?: (scene: Phaser.Scene) => void;
   init?: (scene: Phaser.Scene) => void;
+  renderLoading?: (progress: number) => React.ReactNode;
 } & Omit<
   Phaser.Types.Scenes.CreateSceneFromObjectConfig,
   "create" | "preload" | "init"
 >;
 
 const Scene = forwardRef<SceneType, Props>(
-  ({ name, children, create, preload, init, ...config }, ref) => {
+  (
+    { name, children, create, preload, init, renderLoading, ...config },
+    ref
+  ) => {
     const [loading, setloading] = useState(!!preload);
+    const [loadingProgress, setLoadingProgress] = useState(0);
     const game = useGame();
 
     const scene = useMemo(() => {
@@ -42,7 +46,6 @@ const Scene = forwardRef<SceneType, Props>(
             sceneInstance.load.once("complete", () => {
               setloading(false);
             });
-            sceneInstance.load.start();
           }
         : null;
       sceneInstance.create = create ? () => create(sceneInstance) : null;
@@ -52,9 +55,22 @@ const Scene = forwardRef<SceneType, Props>(
     }, []);
 
     useEffect(() => {
+      const listeners: Phaser.Events.EventEmitter[] = [];
       game.scene.add(name, scene, true);
+      listeners.push(
+        scene.load.once("start", () => {
+          setloading(!!preload);
+        }),
+        scene.load.on("progress", (progress: number) => {
+          setLoadingProgress(progress);
+        })
+      );
+
       return () => {
         game.scene.remove(name);
+        listeners.forEach((listener) =>
+          listener.eventNames().forEach((event) => listener.off(event))
+        );
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -63,7 +79,7 @@ const Scene = forwardRef<SceneType, Props>(
 
     return (
       <SceneContext.Provider value={scene}>
-        {loading ? null : children}
+        {loading && renderLoading ? renderLoading(loadingProgress) : children}
       </SceneContext.Provider>
     );
   }
