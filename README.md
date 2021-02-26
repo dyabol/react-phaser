@@ -1,3 +1,3 @@
 # React Phaser
 
-Example for using Pahser in React style
+Example for using Phaser in React style
